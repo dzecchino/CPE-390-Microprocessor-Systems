@@ -1,0 +1,27 @@
+  .global _Z9fftSortOfPdi
+__Z9fftSortOfPdi:
+  mov     r3, #1      @ # of indexes
+.L41: @ a + b loop
+  cmp     r2, r1      @ compare if we are at end case (last index)
+  beq     .L43
+  vldr.f64  d0, [r0]  @ d0 = a
+  mov     r2, r0      @ preserve r0 for final mov
+  add     r2, r2, #8  @ move 8 bytes to b
+  vldr.f64  d1, [r2]  @ d1 = b
+  add     d0, d0, d1  @ a + b
+  mov     [r0], d0    @ mov or str??
+  add     r0, r0, #8  @ move to next index and a - b loop
+.L42: @ a - b loop
+  cmp     r3, r1      @ compare if we are at end case (last index)
+  beq     .L43
+  vldr.f64  d0, [r0]  @ d0 = a
+  mov     r2, r0      @ preserve r0 for final mov
+  add     r2, r2, #8  @ move 8 bytes to b
+  vldr.f64  d1, [r2]  @ d1 = b
+  sub     d0, d0, d1  @ a - b
+  mov     [r0], d0    @ mov or str??
+  add     r0, r0, #8  @ move to next index
+  bx      .L41        @ go to a + b loop
+@ end case
+.L43:
+  bx lr
